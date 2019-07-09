@@ -62,7 +62,7 @@ class AdamHD(Optimizer):
                     # Exponential moving average of squared gradient values
                     state['exp_avg_sq'] = torch.zeros_like(p.data)
 
-                exp_avg, exp_avg_sq = state['exp_avg'], state['exp_avg_sq']
+                exp_avg, exp_avg_sq = state['exp_avg'], state['exp_avg_sq']    ###############
                 beta1, beta2 = group['betas']
 
                 state['step'] += 1
@@ -88,5 +88,5 @@ class AdamHD(Optimizer):
                 step_size = group['lr'] * math.sqrt(bias_correction2) / bias_correction1
         
                 p.data.addcdiv_(-step_size, exp_avg, denom)
-
+                
         return loss

@@ -129,7 +129,7 @@ class SGDHD(Optimizer):
                 buf = state['momentum_buffer'] = torch.zeros_like(grad)
                 buf.mul_(momentum).add_(grad)
             else:
-                buf = state['momentum_buffer']
+                buf = state['momentum_buffer']  ###########
                 buf.mul_(momentum).add_(1 - dampening, grad)
             if nesterov:
                 grad.add_(momentum, buf)

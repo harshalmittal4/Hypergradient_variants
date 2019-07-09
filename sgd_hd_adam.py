@@ -130,6 +130,7 @@ class SGDHD_lr_Adam(Optimizer):
             grad_prev = state['grad_prev']
             # Hypergradient for SGD
             h = torch.dot(grad, grad_prev)
+            h = -h
             # Hypergradient descent of the learning rate:
                    
         
@@ -144,8 +145,6 @@ class SGDHD_lr_Adam(Optimizer):
             # Hypergradient descent of the learning rate:
             group['lr'] -= step_size_ * exp_avg_h / denom_
             #group['lr'].addcdiv_(-step_size_,exp_avg_h,denom_)
-
-         #group['lr'] += group['hypergrad_lr'] * h      ###########################
 
         if momentum != 0:
             if 'momentum_buffer' not in state:

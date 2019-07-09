@@ -53,9 +53,9 @@ class SGDHD_lr_Nag(Optimizer):
         The Nesterov version is analogously modified.
     """
 
-    def __init__(self, params, lr=required, momentum=0, dampening=0, momentum_h=0, dampening_h=0,
+    def __init__(self, params, lr=required, momentum=0, dampening=0, momentum_h=0.4, dampening_h=0, nesterov_h=False,
                  weight_decay=0, nesterov=False, hypergrad_lr=1e-6):
-        defaults = dict(lr=lr, momentum=momentum, dampening=dampening, momentum_h=momentum_h, dampening_h = dampening_h,
+        defaults = dict(lr=lr, momentum=momentum, dampening=dampening, momentum_h=momentum_h, dampening_h = dampening_h, nesterov_h=nesterov_h,
                         weight_decay=weight_decay, nesterov=nesterov, hypergrad_lr=hypergrad_lr)
         if nesterov and (momentum <= 0 or dampening != 0):
             raise ValueError("Nesterov momentum requires a momentum and zero dampening")
@@ -125,9 +125,10 @@ class SGDHD_lr_Nag(Optimizer):
         grad_prev = state['grad_prev']
         # Hypergradient for SGD
         h = torch.dot(grad, grad_prev)
-
+        h = -h
         momentum_h = group['momentum_h']
         dampening_h = group['dampening_h']
+        nesterov_h = group['nesterov_h']
 
         if momentum_h and state['step'] > 1:
 
@@ -141,7 +142,7 @@ class SGDHD_lr_Nag(Optimizer):
                 h = buf_h
 
         # Hypergradient descent of the learning rate:
-        group['lr'] -= group['hypergrad_lr'] * h    ################# + - 
+        group['lr'] -= group['hypergrad_lr'] * h
 
 
         if momentum != 0:

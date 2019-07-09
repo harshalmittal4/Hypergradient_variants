@@ -27,9 +27,9 @@ class AdamHD_lr_Nag(Optimizer):
         https://openreview.net/forum?id=BkrsAzWAb
     """
 
-    def __init__(self, params, lr=1e-3, betas=(0.9, 0.999), eps=1e-8,momentum_h=0, dampening_h=0,
+    def __init__(self, params, lr=1e-3, betas=(0.9, 0.999), eps=1e-8, momentum_h=0.4, dampening_h=0, nesterov_h=False,
                  weight_decay=0, hypergrad_lr=1e-8):
-        defaults = dict(lr=lr, betas=betas, eps=eps, momentum_h=momentum_h, dampening_h=dampening_h,
+        defaults = dict(lr=lr, betas=betas, eps=eps, momentum_h=momentum_h, dampening_h=dampening_h, nesterov_h=nesterov_h,
                         weight_decay=weight_decay, hypergrad_lr=hypergrad_lr)
         super(AdamHD_lr_Nag, self).__init__(params, defaults)
 
@@ -76,13 +76,14 @@ class AdamHD_lr_Nag(Optimizer):
                     prev_bias_correction2 = 1 - beta2 ** (state['step'] - 1)
                     # Hypergradient for Adam:
                     h = torch.dot(grad.view(-1), torch.div(exp_avg, exp_avg_sq.sqrt().add_(group['eps'])).view(-1)) * math.sqrt(prev_bias_correction2) / prev_bias_correction1
-                    
+                    h = -h
                     momentum_h = group['momentum_h']
                     dampening_h = group['dampening_h']
+                    nesterov_h = group['nesterov_h']
                     if momentum_h:
                         buf_h = state['momentum_buffer_h']
                         buf_h.mul_(momentum_h).add_(1 - dampening_h, h)
-                        state['momentum_buffer_h'] = buf_h##################
+                        state['momentum_buffer_h'] = buf_h        ##################
 
                         if nesterov_h:
                             h.add_(momentum_h, buf_h)
@@ -90,7 +91,7 @@ class AdamHD_lr_Nag(Optimizer):
                             h = buf_h
 
                     # Hypergradient descent of the learning rate:
-                    group['lr'] -= group['hypergrad_lr'] * h ################ + - 
+                    group['lr'] -= group['hypergrad_lr'] * h
 
                 # Decay the first and second moment running average coefficient
                 exp_avg.mul_(beta1).add_(1 - beta1, grad)
