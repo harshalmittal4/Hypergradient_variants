@@ -64,7 +64,6 @@ class AdamHD(Optimizer):
 
                 exp_avg, exp_avg_sq = state['exp_avg'], state['exp_avg_sq']    ###############
                 beta1, beta2 = group['betas']
-
                 state['step'] += 1
 
                 if group['weight_decay'] != 0:
@@ -82,7 +81,6 @@ class AdamHD(Optimizer):
                 exp_avg.mul_(beta1).add_(1 - beta1, grad)
                 exp_avg_sq.mul_(beta2).addcmul_(1 - beta2, grad, grad)
                 denom = exp_avg_sq.sqrt().add_(group['eps'])
-
                 bias_correction1 = 1 - beta1 ** state['step']
                 bias_correction2 = 1 - beta2 ** state['step']
                 step_size = group['lr'] * math.sqrt(bias_correction2) / bias_correction1

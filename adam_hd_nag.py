@@ -83,7 +83,6 @@ class AdamHD_lr_Nag(Optimizer):
                     if momentum_h:
                         buf_h = state['momentum_buffer_h']
                         buf_h.mul_(momentum_h).add_(1 - dampening_h, h)
-                        state['momentum_buffer_h'] = buf_h        ##################
 
                         if nesterov_h:
                             h.add_(momentum_h, buf_h)

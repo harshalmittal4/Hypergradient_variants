@@ -152,7 +152,6 @@ class SGDHD_lr_Nag(Optimizer):
             else:
                 buf = state['momentum_buffer']
                 buf.mul_(momentum).add_(1 - dampening, grad)
-                state['momentum_buffer'] = buf        #############
             if nesterov:
                 grad.add_(momentum, buf)
             else:
