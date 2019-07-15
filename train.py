@@ -147,12 +147,13 @@ def train(opt, log_func=None):
         loss = loss.data
         break
     valid_loss = 0
-    for data, target in valid_loader:
-        data, target = Variable(data, volatile=True), Variable(target)
-        if opt.cuda:
-            data, target = data.cuda(), target.cuda()
-        output = model(data)
-        valid_loss += F.cross_entropy(output, target, size_average=False).data
+    with torch.no_grad():
+        for data, target in valid_loader:
+            data, target = Variable(data), Variable(target)
+            if opt.cuda:
+                data, target = data.cuda(), target.cuda()
+            output = model(data)
+            valid_loss += F.cross_entropy(output, target, size_average=False).data
     valid_loss /= len(valid_loader.dataset)
     if log_func is not None:
         log_func(0, 0, 0, loss, loss, valid_loss, opt.alpha_0, opt.alpha_0, opt.beta)
@@ -195,15 +196,16 @@ def train(opt, log_func=None):
                 alpha_epoch /= len(train_loader)
                 model.eval()
                 valid_loss = 0
-                for data, target in valid_loader:
-                    data, target = Variable(data, volatile=True), Variable(target)
-                    if opt.cuda:
-                        data, target = data.cuda(), target.cuda()
-                    output = model(data)
-                    valid_loss += F.cross_entropy(output, target, size_average=False).data
+                with torch.no_grad():
+                    for data, target in valid_loader:
+                        data, target = Variable(data), Variable(target)
+                        if opt.cuda:
+                            data, target = data.cuda(), target.cuda()
+                        output = model(data)
+                        valid_loss += F.cross_entropy(output, target, size_average=False).data
                 valid_loss /= len(valid_loader.dataset)
                 if log_func is not None:
-                    log_func(epoch, iteration, time.time() - time_start, loss, loss_epoch, valid_loss, alpha, alpha_epoch, opt.beta)
+                        log_func(epoch, iteration, time.time() - time_start, loss, loss_epoch, valid_loss, alpha, alpha_epoch, opt.beta)
             else:
                 if log_func is not None:
                     log_func(epoch, iteration, time.time() - time_start, loss, float('nan'), float('nan'), alpha, float('nan'), opt.beta)
@@ -244,8 +246,14 @@ def main():
             torch.cuda.set_device(opt.device)
             torch.cuda.manual_seed(opt.seed)
             torch.backends.cudnn.enabled = True
+        
+        if torch.cuda.is_available():
+            a = torch.cuda.current_device()
+            print("Running on : {}".format(a))
+            print(torch.cuda.device_count())
+            print(torch.cuda.get_device_name(a))
 
-        file_name = '{}/{}/{:+.0e}_{:+.0e}/{}.csv'.format(opt.dir, opt.model, opt.alpha_0, opt.beta, opt.method)
+        file_name = '{}/{}/{:+.0e}_{:+.0e}/{}_epochs{}.csv'.format(opt.dir, opt.model, opt.alpha_0, opt.beta, opt.method, opt.epochs)
         os.makedirs(os.path.dirname(file_name), exist_ok=True)
         if not opt.silent:
             print('Output file: {}'.format(file_name))

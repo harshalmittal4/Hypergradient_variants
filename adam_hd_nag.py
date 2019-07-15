@@ -27,7 +27,7 @@ class AdamHD_lr_Nag(Optimizer):
         https://openreview.net/forum?id=BkrsAzWAb
     """
 
-    def __init__(self, params, lr=1e-3, betas=(0.9, 0.999), eps=1e-8, momentum_h=0.4, dampening_h=0, nesterov_h=False,
+    def __init__(self, params, lr=1e-3, betas=(0.9, 0.999), eps=1e-8, momentum_h=0.9, dampening_h=0, nesterov_h=False,
                  weight_decay=0, hypergrad_lr=1e-8):
         defaults = dict(lr=lr, betas=betas, eps=eps, momentum_h=momentum_h, dampening_h=dampening_h, nesterov_h=nesterov_h,
                         weight_decay=weight_decay, hypergrad_lr=hypergrad_lr)

@@ -53,7 +53,7 @@ class SGDHD_lr_Nag(Optimizer):
         The Nesterov version is analogously modified.
     """
 
-    def __init__(self, params, lr=required, momentum=0, dampening=0, momentum_h=0.4, dampening_h=0, nesterov_h=False,
+    def __init__(self, params, lr=required, momentum=0, dampening=0, momentum_h=0.9, dampening_h=0, nesterov_h=False,
                  weight_decay=0, nesterov=False, hypergrad_lr=1e-6):
         defaults = dict(lr=lr, momentum=momentum, dampening=dampening, momentum_h=momentum_h, dampening_h = dampening_h, nesterov_h=nesterov_h,
                         weight_decay=weight_decay, nesterov=nesterov, hypergrad_lr=hypergrad_lr)
