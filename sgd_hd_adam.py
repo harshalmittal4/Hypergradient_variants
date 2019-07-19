@@ -4,7 +4,7 @@ from functools import reduce
 from torch.optim.optimizer import Optimizer, required
 
 
-class SGDHD_lr_Adam(Optimizer):
+class SGD_HDAdam(Optimizer):
     r"""Implements stochastic gradient descent (optionally with momentum).
 
     Nesterov momentum is based on the formula from
@@ -60,7 +60,7 @@ class SGDHD_lr_Adam(Optimizer):
                         weight_decay=weight_decay, nesterov=nesterov, hypergrad_lr=hypergrad_lr, lr_betas=lr_betas, lr_eps=lr_eps)
         if nesterov and (momentum <= 0 or dampening != 0):
             raise ValueError("Nesterov momentum requires a momentum and zero dampening")
-        super(SGDHD_lr_Adam, self).__init__(params, defaults)
+        super(SGD_HDAdam, self).__init__(params, defaults)
 
         if len(self.param_groups) != 1:
             raise ValueError("SGDHD doesn't support per-parameter options (parameter groups)")
@@ -119,9 +119,12 @@ class SGDHD_lr_Adam(Optimizer):
         if len(state) == 0:
             state['step'] = 0
             state['grad_prev'] = torch.zeros_like(grad)
+            # Exponential moving average of hypergradient values
             state['exp_avg_h'] = grad.new_tensor(0)
+            # Exponential moving average of squared hypergradient values
             state['exp_avg_h_sq'] = grad.new_tensor(0)
-
+        
+        # References and beta1_h, beta2_h coefficients for Hypergradient Descent Adam (HD Adam) of the learning rate
         exp_avg_h, exp_avg_h_sq = state['exp_avg_h'], state['exp_avg_h_sq']
         beta1_h, beta2_h = group['lr_betas']
 
@@ -131,9 +134,8 @@ class SGDHD_lr_Adam(Optimizer):
             # Hypergradient for SGD
             h = torch.dot(grad, grad_prev)
             h = -h
-            # Hypergradient descent of the learning rate:
-                   
-        
+
+            # Hypergradient Descent Adam (HD Adam) of the learning rate:
             exp_avg_h.mul_(beta1_h).add_(1 - beta1_h, h)
             exp_avg_h_sq.mul_(beta2_h).addcmul_(1 - beta2_h, h, h)
             denom_ = exp_avg_h_sq.sqrt().add_(group['lr_eps'])
@@ -142,7 +144,6 @@ class SGDHD_lr_Adam(Optimizer):
             bias_correction2_ = 1 - beta2_h ** state['step']
             step_size_ = group['hypergrad_lr'] * math.sqrt(bias_correction2_) / bias_correction1_
                     
-            # Hypergradient descent of the learning rate:
             group['lr'] -= step_size_ * exp_avg_h / denom_
             #group['lr'].addcdiv_(-step_size_,exp_avg_h,denom_)
 

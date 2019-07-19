@@ -15,10 +15,10 @@ from torch.utils.data import DataLoader
 from torch.optim import SGD, Adam
 from hypergrad import SGDHD, AdamHD
 from adam_hd_adam import Adam_HDAdam
-from sgd_hd_adam import SGDHD_lr_Adam
+from sgd_hd_adam import SGD_HDAdam
 
 from adam_hd_nag import Adam_HDNag
-from sgd_hd_nag import SGDHD_lr_Nag
+from sgd_hd_nag import SGD_HDNag
 
 
 # =======================================================================
@@ -134,9 +134,9 @@ def train(opt, log_func=None):
     elif opt.method == 'adam_hd_adam':
         optimizer = Adam_HDAdam(model.parameters(), lr=opt.alpha_0, weight_decay=opt.weightDecay, hypergrad_lr=opt.beta)
     elif opt.method == 'sgd_hd_adam':
-        optimizer = SGDHD_lr_Adam(model.parameters(), lr=opt.alpha_0, weight_decay=opt.weightDecay, momentum=opt.mu, nesterov=True, hypergrad_lr=opt.beta)
+        optimizer = SGD_HDAdam(model.parameters(), lr=opt.alpha_0, weight_decay=opt.weightDecay, momentum=opt.mu, nesterov=True, hypergrad_lr=opt.beta)
     elif opt.method == 'sgd_hd_nag':
-        optimizer = SGDHD_lr_Nag(model.parameters(), lr=opt.alpha_0, weight_decay=opt.weightDecay, momentum=opt.mu, nesterov=True, hypergrad_lr=opt.beta)
+        optimizer = SGD_HDNag(model.parameters(), lr=opt.alpha_0, weight_decay=opt.weightDecay, momentum=opt.mu, nesterov=True, hypergrad_lr=opt.beta)
     elif opt.method == 'adam_hd_nag':
         optimizer = Adam_HDNag(model.parameters(), lr=opt.alpha_0, weight_decay=opt.weightDecay, hypergrad_lr=opt.beta)
     else:

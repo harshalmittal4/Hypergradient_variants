@@ -61,6 +61,7 @@ class Adam_HDNag(Optimizer):
                     state['exp_avg'] = torch.zeros_like(p.data)
                     # Exponential moving average of squared gradient values
                     state['exp_avg_sq'] = torch.zeros_like(p.data)
+                    # Accumulated momentum for the hypergradient
                     state['momentum_buffer_h'] = grad.new_tensor(0)
 
                 exp_avg, exp_avg_sq = state['exp_avg'], state['exp_avg_sq']
@@ -74,12 +75,23 @@ class Adam_HDNag(Optimizer):
                 if state['step'] > 1:
                     prev_bias_correction1 = 1 - beta1 ** (state['step'] - 1)
                     prev_bias_correction2 = 1 - beta2 ** (state['step'] - 1)
+
                     # Hypergradient for Adam:
                     h = torch.dot(grad.view(-1), torch.div(exp_avg, exp_avg_sq.sqrt().add_(group['eps'])).view(-1)) * math.sqrt(prev_bias_correction2) / prev_bias_correction1
                     h = -h
+
+                    ''' Hypergradient Descent momentum (HD momentum) coefficients
+                    Parameters
+                    -----------
+                    momentum_h : momentum coefficient for the hypergradient
+                    dampening_h : dampening coefficient for the hypergradient
+                    nesterov_h : bool, if true : use nesterov momentum for the l.r update, else use sgd + momemtum
+                    '''
                     momentum_h = group['momentum_h']
                     dampening_h = group['dampening_h']
                     nesterov_h = group['nesterov_h']
+
+                    # Hypergradient descent/ Hypergradient descent momentum (HD momentum) of the learning rate (based on whether momentum_h provided/not provided)
                     if momentum_h:
                         buf_h = state['momentum_buffer_h']
                         buf_h.mul_(momentum_h).add_(1 - dampening_h, h)
@@ -88,8 +100,7 @@ class Adam_HDNag(Optimizer):
                             h.add_(momentum_h, buf_h)
                         else:
                             h = buf_h
-
-                    # Hypergradient descent of the learning rate:
+                    
                     group['lr'] -= group['hypergrad_lr'] * h
 
                 # Decay the first and second moment running average coefficient
