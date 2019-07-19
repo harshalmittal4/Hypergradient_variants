@@ -203,6 +203,9 @@ def train(opt, log_func=None):
 
     # Epoch start
     while not done:
+        # -------------------------------------------------------------------------
+        #   EPOCH START
+        # -------------------------------------------------------------------------
         model.train()
         loss_epoch = 0
         alpha_epoch = 0
@@ -226,6 +229,12 @@ def train(opt, log_func=None):
                     print('Early stopping: loss <= {}'.format(opt.lossThreshold))
                     done = True
                     break
+            # Early stopping in case number of iterations provided
+            if opt.iterations != 0:
+                if iteration + 1 > opt.iterations:
+                    print('Early stopping: iteration > {}'.format(opt.iterations))
+                    done = True
+                    break
             # -------------------------------------------------------------------------
             #   ON EPOCH END (validation)
             # -------------------------------------------------------------------------
@@ -244,7 +253,6 @@ def train(opt, log_func=None):
                 valid_loss /= len(valid_loader.dataset)
                 if log_func is not None:
                         log_func(begin_epoch + epoch, begin_iteration + iteration, time.time() - time_start + time_already, loss, loss_epoch, valid_loss, alpha, alpha_epoch, opt.beta)
-            
             # -------------------------------------------------------------------------
             #   ELSE CONTINUE EPOCH
             # -------------------------------------------------------------------------
@@ -252,16 +260,10 @@ def train(opt, log_func=None):
                 if log_func is not None:
                     log_func(begin_epoch + epoch, begin_iteration + iteration, time.time() - time_start + time_already, loss, float('nan'), float('nan'), alpha, float('nan'), opt.beta)
             
-            # Early stopping in case number of iterations provided
-            if opt.iterations != 0:
-                if iteration + 1 > opt.iterations:
-                    print('Early stopping: iteration > {}'.format(opt.iterations))
-                    done = True
-                    break
             iteration += 1
 
         # -------------------------------------------------------------------------
-        #   IF COMPLETED THE DESIRED NUMBER OF EPOCHS  (checkpoint)
+        #   IF DESIRED NUMBER OF EPOCHS COMPLETED (checkpoint)
         # -------------------------------------------------------------------------
         if opt.epochs != 0:
             if epoch + 1 > opt.epochs:
