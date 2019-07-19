@@ -118,30 +118,38 @@ class SGDHD_lr_Nag(Optimizer):
         if len(state) == 0:
             state['step'] = 0
             state['grad_prev'] = torch.zeros_like(grad)
+
             state['momentum_buffer_h'] = grad.new_tensor(0)
             
         state['step']+=1
 
         grad_prev = state['grad_prev']
+
         # Hypergradient for SGD
         h = torch.dot(grad, grad_prev)
         h = -h
+
+        ''' Hypergradient Descent Nag coefficients
+        Parameters
+        -----------
+        momentum_h : momentum coefficient for the hypergradient
+        dampening_h : dampening coefficient for the hypergradient
+        nesterov_h : bool, if true : use nesterov momentum for the l.r update, else use sgd + momemtum
+        '''
         momentum_h = group['momentum_h']
         dampening_h = group['dampening_h']
         nesterov_h = group['nesterov_h']
 
+        # Hypergradient descent/ Hypergradient descent momentum (HD momentum) of the learning rate (based on whether momentum_h provided/not provided)
         if momentum_h and state['step'] > 1:
-
             buf_h = state['momentum_buffer_h']
             buf_h.mul_(momentum_h).add_(1 - dampening_h, h)
             state['momentum_buffer_h'] = buf_h
-
             if nesterov_h:
                 h.add_(momentum_h, buf_h)
             else:
                 h = buf_h
 
-        # Hypergradient descent of the learning rate:
         group['lr'] -= group['hypergrad_lr'] * h
 
 
