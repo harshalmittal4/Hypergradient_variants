@@ -16,7 +16,6 @@ from torch.optim import SGD, Adam
 from hypergrad import SGDHD, AdamHD
 from adam_hd_adam import Adam_HDAdam
 from sgd_hd_adam import SGD_HDAdam
-
 from adam_hd_nag import Adam_HDNag
 from sgd_hd_nag import SGD_HDNag
 
@@ -328,7 +327,7 @@ def main():
         # -------------------------------------------------------------------------
         #   Results file
         # -------------------------------------------------------------------------
-        file_name = '{}/{}/{:+.0e}_{:+.0e}/{}_epoch3.csv'.format(opt.dir, opt.model, opt.alpha_0, opt.beta, opt.method)  
+        file_name = '{}/{}/{:+.0e}_{:+.0e}/{}.csv'.format(opt.dir, opt.model, opt.alpha_0, opt.beta, opt.method)  
         if not opt.silent:
             print('Output file: {}'.format(file_name))
         
