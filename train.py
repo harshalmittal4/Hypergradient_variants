@@ -262,11 +262,7 @@ def train(opt, log_func=None):
                         valid_loss += F.cross_entropy(output, target, size_average=False).data
                 valid_loss /= len(valid_loader.dataset)
                 if log_func is not None:
-<<<<<<< HEAD
-                        log_func(begin_epoch + epoch, begin_iteration + iteration, time.time() - time_start + time_already, loss.item(), loss_epoch.item(), valid_loss.item(), alpha, alpha_epoch, opt.beta)
-=======
                     log_func(begin_epoch + epoch, begin_iteration + iteration, time.time() - time_start + time_already, loss.item(), loss_epoch.item(), valid_loss.item(), alpha, alpha_epoch, opt.beta)
->>>>>>> 9831d6eed5e6c89891a68db5c234cc9a29682e1b
             # -------------------------------------------------------------------------
             #   ELSE CONTINUE EPOCH
             # -------------------------------------------------------------------------
@@ -365,7 +361,7 @@ def main():
                     writer.writerow([epoch, iteration, time_spent, loss, loss_epoch, valid_loss, alpha, alpha_epoch, beta])
                     if not opt.silent:
                         print('{} | {} | Epoch: {} | Iter: {} | Time: {:+.3e} | Loss: {:+.3e} | Valid. loss: {:+.3e} | Alpha: {:+.3e} | Beta: {:+.3e}'.format(opt.model, opt.method, epoch, iteration, time_spent, loss, valid_loss, alpha, beta))
-                train(opt, log_func)
+train(opt, log_func)
 
     except KeyboardInterrupt:
         print('Stopped')
