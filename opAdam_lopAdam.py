@@ -3,7 +3,7 @@ import torch
 from torch.optim.optimizer import Optimizer
 
 
-class opAdam_lopAdamHD(Optimizer):
+class opAdam_lopAdam(Optimizer):
     """Implements Adam algorithm.
 
     It has been proposed in `Adam: A Method for Stochastic Optimization`_.
@@ -31,7 +31,7 @@ class opAdam_lopAdamHD(Optimizer):
                  weight_decay=0, hypergrad_lr=1e-8):
         defaults = dict(lr=lr, betas=betas, eps=eps, lr_betas=lr_betas, lr_eps=lr_eps,
                         weight_decay=weight_decay, hypergrad_lr=hypergrad_lr)
-        super(opAdam_lopAdamHD, self).__init__(params, defaults)
+        super(opAdam_lopAdam, self).__init__(params, defaults)
 
     def step(self, closure=None):
         """Performs a single optimization step.

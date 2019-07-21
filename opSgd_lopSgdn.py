@@ -3,7 +3,7 @@ from functools import reduce
 from torch.optim.optimizer import Optimizer, required
 
 
-class opSGD_lopSGDHD(Optimizer):
+class opSGD_lopSGDN(Optimizer):
     r"""Implements stochastic gradient descent (optionally with momentum).
 
     Nesterov momentum is based on the formula from
@@ -53,13 +53,13 @@ class opSGD_lopSGDHD(Optimizer):
         The Nesterov version is analogously modified.
     """
 
-    def __init__(self, params, lr=required, momentum=0, dampening=0, momentum_h=0.9, dampening_h=0, nesterov_h=False,
+    def __init__(self, params, lr=required, momentum=0, dampening=0, momentum_h=0.9, dampening_h=0, nesterov_h=True,
                  weight_decay=0, nesterov=False, hypergrad_lr=1e-6):
         defaults = dict(lr=lr, momentum=momentum, dampening=dampening, momentum_h=momentum_h, dampening_h = dampening_h, nesterov_h=nesterov_h,
                         weight_decay=weight_decay, nesterov=nesterov, hypergrad_lr=hypergrad_lr)
         if nesterov and (momentum <= 0 or dampening != 0):
             raise ValueError("Nesterov momentum requires a momentum and zero dampening")
-        super(opSGD_lopSGDHD, self).__init__(params, defaults)
+        super(opSGD_lopSGDN, self).__init__(params, defaults)
 
         if len(self.param_groups) != 1:
             raise ValueError("SGDHD doesn't support per-parameter options (parameter groups)")
