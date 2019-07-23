@@ -16,7 +16,6 @@ from torch.optim import SGD, Adam
 from hypergrad import SGDHD, AdamHD
 from adam_hd_adam import Adam_HDAdam
 from sgd_hd_adam import SGD_HDAdam
-
 from adam_hd_nag import Adam_HDNag
 from sgd_hd_nag import SGD_HDNag
 
@@ -190,7 +189,7 @@ def train(opt, log_func=None):
             valid_loss += F.cross_entropy(output, target, size_average=False).data
     valid_loss /= len(valid_loader.dataset)
     if(not opt.continue_training) and log_func is not None:
-        log_func(0, 0, 0, loss, loss, valid_loss, opt.alpha_0, opt.alpha_0, opt.beta)
+        log_func(0, 0, 0, loss.item(), loss.item(), valid_loss.item(), opt.alpha_0, opt.alpha_0, opt.beta)
 
 
     # =============================================================================
@@ -203,6 +202,9 @@ def train(opt, log_func=None):
 
     # Epoch start
     while not done:
+        # -------------------------------------------------------------------------
+        #   EPOCH START
+        # -------------------------------------------------------------------------
         model.train()
         loss_epoch = 0
         alpha_epoch = 0
@@ -226,6 +228,12 @@ def train(opt, log_func=None):
                     print('Early stopping: loss <= {}'.format(opt.lossThreshold))
                     done = True
                     break
+            # Early stopping in case number of iterations provided
+            if opt.iterations != 0:
+                if iteration + 1 > opt.iterations:
+                    print('Early stopping: iteration > {}'.format(opt.iterations))
+                    done = True
+                    break
             # -------------------------------------------------------------------------
             #   ON EPOCH END (validation)
             # -------------------------------------------------------------------------
@@ -243,25 +251,18 @@ def train(opt, log_func=None):
                         valid_loss += F.cross_entropy(output, target, size_average=False).data
                 valid_loss /= len(valid_loader.dataset)
                 if log_func is not None:
-                        log_func(begin_epoch + epoch, begin_iteration + iteration, time.time() - time_start + time_already, loss, loss_epoch, valid_loss, alpha, alpha_epoch, opt.beta)
-            
+                        log_func(begin_epoch + epoch, begin_iteration + iteration, time.time() - time_start + time_already, loss.item(), loss_epoch.item(), valid_loss.item(), alpha, alpha_epoch, opt.beta)
             # -------------------------------------------------------------------------
             #   ELSE CONTINUE EPOCH
             # -------------------------------------------------------------------------
             else:
                 if log_func is not None:
-                    log_func(begin_epoch + epoch, begin_iteration + iteration, time.time() - time_start + time_already, loss, float('nan'), float('nan'), alpha, float('nan'), opt.beta)
+                    log_func(begin_epoch + epoch, begin_iteration + iteration, time.time() - time_start + time_already, loss.item(), float('nan'), float('nan'), alpha, float('nan'), opt.beta)
             
-            # Early stopping in case number of iterations provided
-            if opt.iterations != 0:
-                if iteration + 1 > opt.iterations:
-                    print('Early stopping: iteration > {}'.format(opt.iterations))
-                    done = True
-                    break
             iteration += 1
 
         # -------------------------------------------------------------------------
-        #   IF COMPLETED THE DESIRED NUMBER OF EPOCHS  (checkpoint)
+        #   IF DESIRED NUMBER OF EPOCHS COMPLETED (checkpoint)
         # -------------------------------------------------------------------------
         if opt.epochs != 0:
             if epoch + 1 > opt.epochs:
@@ -326,22 +327,21 @@ def main():
         # -------------------------------------------------------------------------
         #   Results file
         # -------------------------------------------------------------------------
-        file_name = '{}/{}/{:+.0e}_{:+.0e}/{}_epoch3.csv'.format(opt.dir, opt.model, opt.alpha_0, opt.beta, opt.method)  
-        if not opt.silent:
-            print('Output file: {}'.format(file_name))
-        
-        if os.path.isfile(file_name):
-             print('File with previous results exists, appending to that file...')
-        else:
-            os.makedirs(os.path.dirname(file_name), exist_ok=True)
-        
-        # Writing the results to csv
         if not opt.save:
             def log_func(epoch, iteration, time_spent, loss, loss_epoch, valid_loss, alpha, alpha_epoch, beta):
                 if not opt.silent:
                     print('{} | {} | Epoch: {} | Iter: {} | Time: {:+.3e} | Loss: {:+.3e} | Valid. loss: {:+.3e} | Alpha: {:+.3e} | Beta: {:+.3e}'.format(opt.model, opt.method, epoch, iteration, time_spent, loss, valid_loss, alpha, beta))
             train(opt, log_func)
         else:
+
+            file_name = '{}/{}/{:+.0e}_{:+.0e}/{}.csv'.format(opt.dir, opt.model, opt.alpha_0, opt.beta, opt.method)  
+            if not opt.silent:
+                print('Output file: {}'.format(file_name))            
+            if os.path.isfile(file_name):
+                 print('File with previous results exists, appending to that file...')
+            else:
+                os.makedirs(os.path.dirname(file_name), exist_ok=True)
+
             with open(file_name, 'a') as f:
                 writer = csv.writer(f)
                 if not opt.continue_training:
