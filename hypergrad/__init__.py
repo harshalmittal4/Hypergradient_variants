@@ -1,2 +1,2 @@
-from .adam_hd import AdamHD
-from .sgd_hd import SGDHD
+from .opAdam_lopHd import AdamHD
+from .opSgd_lopHd import SGDHD

@@ -14,10 +14,10 @@ import vgg
 from torch.utils.data import DataLoader
 from torch.optim import SGD, Adam
 from hypergrad import SGDHD, AdamHD
-from adam_hd_adam import Adam_HDAdam
-from sgd_hd_adam import SGD_HDAdam
-from adam_hd_nag import Adam_HDNag
-from sgd_hd_nag import SGD_HDNag
+from opAdam_lopAdam import opAdam_lopAdam
+from opSgd_lopAdam import opSGD_lopAdam
+from opAdam_lopSgdn import opAdam_lopSGDN
+from opSgd_lopSgdn import opSGD_lopSGDN
 
 
 # =======================================================================
@@ -120,24 +120,30 @@ def train(opt, log_func=None):
 
     if opt.method == 'sgd':
         optimizer = SGD(model.parameters(), lr=opt.alpha_0, weight_decay=opt.weightDecay)
-    elif opt.method == 'sgd_hd':
+    elif opt.method == 'opSgd_lopHd':
         optimizer = SGDHD(model.parameters(), lr=opt.alpha_0, weight_decay=opt.weightDecay, hypergrad_lr=opt.beta)
+    elif opt.method == 'opSgd_lopAdam':
+        optimizer = opSGD_lopAdam(model.parameters(), lr=opt.alpha_0, weight_decay=opt.weightDecay, momentum=0, nesterov=False, hypergrad_lr=opt.beta)
+    elif opt.method == 'opSgd_lopSgdn':
+        optimizer = opSGD_lopSGDN(model.parameters(), lr=opt.alpha_0, weight_decay=opt.weightDecay, momentum=0, nesterov=False, hypergrad_lr=opt.beta)
+
     elif opt.method == 'sgdn':
-        optimizer = SGD(model.parameters(), lr=opt.alpha_0, weight_decay=opt.weightDecay, momentum=opt.mu, nesterov=True)
-    elif opt.method == 'sgdn_hd':
-        optimizer = SGDHD(model.parameters(), lr=opt.alpha_0, weight_decay=opt.weightDecay, momentum=opt.mu, nesterov=True, hypergrad_lr=opt.beta)
+        optimizer = SGD(model.parameters(), lr=opt.alpha_0, weight_decay=opt.weightDecay, momentum=opt.mu, nesterov=True) # mu required
+    elif opt.method == 'opSgdn_lopHd':
+        optimizer = SGDHD(model.parameters(), lr=opt.alpha_0, weight_decay=opt.weightDecay, momentum=opt.mu, nesterov=True, hypergrad_lr=opt.beta) # mu required
+    elif opt.method == 'opSgdn_lopAdam':
+        optimizer = opSGD_lopAdam(model.parameters(), lr=opt.alpha_0, weight_decay=opt.weightDecay, momentum=opt.mu, nesterov=True, hypergrad_lr=opt.beta) #mu required
+    elif opt.method == 'opSgdn_lopSgdn':
+        optimizer = opSGD_lopSGDN(model.parameters(), lr=opt.alpha_0, weight_decay=opt.weightDecay, momentum=opt.mu, nesterov=True, hypergrad_lr=opt.beta) #mu required
+
     elif opt.method == 'adam':
         optimizer = Adam(model.parameters(), lr=opt.alpha_0, weight_decay=opt.weightDecay)
-    elif opt.method == 'adam_hd':
+    elif opt.method == 'opAdam_lopHd':
         optimizer = AdamHD(model.parameters(), lr=opt.alpha_0, weight_decay=opt.weightDecay, hypergrad_lr=opt.beta)
-    elif opt.method == 'adam_hd_adam':
-        optimizer = Adam_HDAdam(model.parameters(), lr=opt.alpha_0, weight_decay=opt.weightDecay, hypergrad_lr=opt.beta)
-    elif opt.method == 'sgd_hd_adam':
-        optimizer = SGD_HDAdam(model.parameters(), lr=opt.alpha_0, weight_decay=opt.weightDecay, momentum=opt.mu, nesterov=True, hypergrad_lr=opt.beta)
-    elif opt.method == 'sgd_hd_nag':
-        optimizer = SGD_HDNag(model.parameters(), lr=opt.alpha_0, weight_decay=opt.weightDecay, momentum=opt.mu, nesterov=True, hypergrad_lr=opt.beta)
-    elif opt.method == 'adam_hd_nag':
-        optimizer = Adam_HDNag(model.parameters(), lr=opt.alpha_0, weight_decay=opt.weightDecay, hypergrad_lr=opt.beta)
+    elif opt.method == 'opAdam_lopAdam':
+        optimizer = opAdam_lopAdam(model.parameters(), lr=opt.alpha_0, weight_decay=opt.weightDecay, hypergrad_lr=opt.beta)
+    elif opt.method == 'opAdam_lopSgdn':
+        optimizer = opAdam_lopSGDN(model.parameters(), lr=opt.alpha_0, weight_decay=opt.weightDecay, hypergrad_lr=opt.beta)
     else:
         raise Exception('Unknown method: {}'.format(opt.method))
 
@@ -222,6 +228,11 @@ def train(opt, log_func=None):
             alpha = optimizer.param_groups[0]['lr']
             alpha_epoch += alpha
             
+            # alpha, alpha_epoch type float in case of regular optimizers, tensor in case of HD counterparts
+            if isinstance(alpha, torch.Tensor):
+                alpha = alpha.item()
+                alpha_epoch = alpha_epoch.item()
+            
             # Early stopping in case lossThreshold provided
             if opt.lossThreshold >= 0:
                 if loss <= opt.lossThreshold:
@@ -251,7 +262,11 @@ def train(opt, log_func=None):
                         valid_loss += F.cross_entropy(output, target, size_average=False).data
                 valid_loss /= len(valid_loader.dataset)
                 if log_func is not None:
+<<<<<<< HEAD
                         log_func(begin_epoch + epoch, begin_iteration + iteration, time.time() - time_start + time_already, loss.item(), loss_epoch.item(), valid_loss.item(), alpha, alpha_epoch, opt.beta)
+=======
+                    log_func(begin_epoch + epoch, begin_iteration + iteration, time.time() - time_start + time_already, loss.item(), loss_epoch.item(), valid_loss.item(), alpha, alpha_epoch, opt.beta)
+>>>>>>> 9831d6eed5e6c89891a68db5c234cc9a29682e1b
             # -------------------------------------------------------------------------
             #   ELSE CONTINUE EPOCH
             # -------------------------------------------------------------------------
@@ -286,7 +301,7 @@ def main():
         parser.add_argument('--seed', help='random seed', default=1, type=int)
         parser.add_argument('--dir', help='directory to write the output files', default='results', type=str)
         parser.add_argument('--model', help='model (logreg, mlp, vgg)', default='logreg', type=str)
-        parser.add_argument('--method', help='method (sgd, sgd_hd, sgdn, sgdn_hd, adam, adam_hd, adam_hd_nag, adam_hd_adam, sgd_hd_nag, sgd_hd_adam)', default='adam_hd_nag', type=str)
+        parser.add_argument('--method', help='method (sgd, opSgd_lopHd, opSgd_lopSgdn, opSgd_lopAdam, sgdn, opSgdn_lopHd, opSgdn_lopSgdn, opSgdn_lopAdam, adam, opAdam_lopHd, opAdam_lopSgdn, opAdam_lopAdam)', default='opAdam_lopSgd', type=str)
         parser.add_argument('--alpha_0', help='initial learning rate', default=0.001, type=float)
         parser.add_argument('--beta', help='learning learning rate', default=0.000001, type=float)
         parser.add_argument('--mu', help='momentum', default=0.9, type=float)
