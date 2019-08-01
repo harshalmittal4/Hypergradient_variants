@@ -46,6 +46,8 @@ class opAdam_lopAdam(Optimizer):
 
         for group in self.param_groups:
             for p in group['params']:
+                print(len(group['params']))
+                print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
                 if p.grad is None:
                     continue
                 grad = p.grad.data
@@ -90,18 +92,22 @@ class opAdam_lopAdam(Optimizer):
                     # Hypergradient Descent Adam (HD Adam) of the learning rate:
                     exp_avg_h.mul_(beta1_h).add_(1 - beta1_h, h)
                     exp_avg_h_sq.mul_(beta2_h).addcmul_(1 - beta2_h, h, h)
-                    denom_ = exp_avg_h_sq.sqrt().add_(group['lr_eps'])
-                    
+                    #denom_ = exp_avg_h_sq.sqrt().add_(group['lr_eps'])
+                    denom_ = torch.sum(exp_avg_sq)
+
                     bias_correction1_ = 1 - beta1_h ** state['step']
                     bias_correction2_ = 1 - beta2_h ** state['step']
                     step_size_ = group['hypergrad_lr'] * math.sqrt(bias_correction2_) / bias_correction1_
                     
-                    group['lr'] -= step_size_ * exp_avg_h / denom_
-
+                    group['lr'] = group['lr'] - step_size_ * exp_avg_h / denom_
+                    #print(exp_avg_h)
+                    #print("AAAAAAAAAAAAAAAAAAAAA")
                 # Decay the first and second moment running average coefficient
                 exp_avg.mul_(beta1).add_(1 - beta1, grad)
                 exp_avg_sq.mul_(beta2).addcmul_(1 - beta2, grad, grad)
                 denom = exp_avg_sq.sqrt().add_(group['eps'])
+                #print(exp_avg_sq.shape)
+                #print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
 
                 bias_correction1 = 1 - beta1 ** state['step']
                 bias_correction2 = 1 - beta2 ** state['step']

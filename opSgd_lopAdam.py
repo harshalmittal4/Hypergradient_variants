@@ -123,10 +123,13 @@ class opSGD_lopAdam(Optimizer):
             state['exp_avg_h'] = grad.new_tensor(0)
             # Exponential moving average of squared hypergradient values
             state['exp_avg_h_sq'] = grad.new_tensor(0)
-        
+            
+            state['exp_avg_sq'] = torch.zeros_like(grad) ##########
         # References and beta1_h, beta2_h coefficients for Hypergradient Descent Adam (HD Adam) of the learning rate
         exp_avg_h, exp_avg_h_sq = state['exp_avg_h'], state['exp_avg_h_sq']
         beta1_h, beta2_h = group['lr_betas']
+        
+        exp_avg_sq = state['exp_avg_sq']
 
         state['step'] += 1
         if state['step'] > 1:
@@ -138,7 +141,8 @@ class opSGD_lopAdam(Optimizer):
             # Hypergradient Descent Adam (HD Adam) of the learning rate:
             exp_avg_h.mul_(beta1_h).add_(1 - beta1_h, h)
             exp_avg_h_sq.mul_(beta2_h).addcmul_(1 - beta2_h, h, h)
-            denom_ = exp_avg_h_sq.sqrt().add_(group['lr_eps'])
+            #denom_ = exp_avg_h_sq.sqrt().add_(group['lr_eps'])
+            denom_= torch.sum(exp_avg_sq)                    #############
 
             bias_correction1_ = 1 - beta1_h ** state['step']
             bias_correction2_ = 1 - beta2_h ** state['step']
@@ -158,7 +162,7 @@ class opSGD_lopAdam(Optimizer):
                 grad.add_(momentum, buf)
             else:
                 grad = buf
-
+        exp_avg_sq.mul_(0.999).addcmul_(1 - 0.999   , grad, grad) ##############
         state['grad_prev'] = grad
 
         self._add_grad(-group['lr'], grad)
