@@ -46,8 +46,8 @@ class opAdam_lopAdam(Optimizer):
 
         for group in self.param_groups:
             for p in group['params']:
-                print(len(group['params']))
-                print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+                #print(len(group['params']))
+                #print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
                 if p.grad is None:
                     continue
                 grad = p.grad.data
@@ -93,7 +93,7 @@ class opAdam_lopAdam(Optimizer):
                     exp_avg_h.mul_(beta1_h).add_(1 - beta1_h, h)
                     exp_avg_h_sq.mul_(beta2_h).addcmul_(1 - beta2_h, h, h)
                     #denom_ = exp_avg_h_sq.sqrt().add_(group['lr_eps'])
-                    denom_ = torch.sum(exp_avg_sq)
+                    denom_ = torch.sum(exp_avg_sq).add_(group['lr_eps'])
 
                     bias_correction1_ = 1 - beta1_h ** state['step']
                     bias_correction2_ = 1 - beta2_h ** state['step']
