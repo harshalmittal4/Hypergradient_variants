@@ -3,7 +3,7 @@ from functools import reduce
 from torch.optim.optimizer import Optimizer, required
 
 
-class opSGD_lopSGDN(Optimizer):
+class SGD_HD(Optimizer):
     r"""Implements stochastic gradient descent (optionally with momentum).
 
     Nesterov momentum is based on the formula from
@@ -53,16 +53,16 @@ class opSGD_lopSGDN(Optimizer):
         The Nesterov version is analogously modified.
     """
 
-    def __init__(self, params, lr=required, momentum=0, dampening=0, momentum_h=0.9, dampening_h=0, nesterov_h=True,
+    def __init__(self, params, lr=required, momentum=0, dampening=0,
                  weight_decay=0, nesterov=False, hypergrad_lr=1e-6):
-        defaults = dict(lr=lr, momentum=momentum, dampening=dampening, momentum_h=momentum_h, dampening_h = dampening_h, nesterov_h=nesterov_h,
+        defaults = dict(lr=lr, momentum=momentum, dampening=dampening,
                         weight_decay=weight_decay, nesterov=nesterov, hypergrad_lr=hypergrad_lr)
         if nesterov and (momentum <= 0 or dampening != 0):
             raise ValueError("Nesterov momentum requires a momentum and zero dampening")
-        super(opSGD_lopSGDN, self).__init__(params, defaults)
+        super(SGD_HD, self).__init__(params, defaults)
 
         if len(self.param_groups) != 1:
-            raise ValueError("SGDHD doesn't support per-parameter options (parameter groups)")
+            raise ValueError("SGD_HD doesn't support per-parameter options (parameter groups)")
 
         self._params = self.param_groups[0]['params']
         self._params_numel = reduce(lambda total, p: total + p.numel(), self._params, 0)
@@ -111,47 +111,18 @@ class opSGD_lopSGDN(Optimizer):
 
         grad = self._gather_flat_grad_with_weight_decay(weight_decay)
 
-        # NOTE: SGDHD has only global state, but we register it as state for
+        # NOTE: SGD_HD has only global state, but we register it as state for
         # the first param, because this helps with casting in load_state_dict
         state = self.state[self._params[0]]
         # State initialization
         if len(state) == 0:
-            state['step'] = 0
-            state['grad_prev'] = torch.zeros_like(grad)            
-            # Accumulated momentum for the hypergradient
-            state['momentum_buffer_h'] = grad.new_tensor(0)
-            
-        state['step']+=1
+            state['grad_prev'] = torch.zeros_like(grad)
 
         grad_prev = state['grad_prev']
-
-        # Hypergradient for SGD
+        # Hypergradient for SGD optimizer
         h = torch.dot(grad, grad_prev)
-        h = -h
-
-        ''' Hypergradient Descent momentum (HD momentum) coefficients
-        Parameters
-        -----------
-        momentum_h : momentum coefficient for the hypergradient
-        dampening_h : dampening coefficient for the hypergradient
-        nesterov_h : bool, if true : use nesterov momentum for the l.r update, else use sgd + momemtum
-        '''
-        momentum_h = group['momentum_h']
-        dampening_h = group['dampening_h']
-        nesterov_h = group['nesterov_h']
-
-        # Hypergradient descent/ Hypergradient descent momentum (HD momentum) of the learning rate (based on whether momentum_h provided/not provided)
-        if momentum_h and state['step'] > 1:
-            buf_h = state['momentum_buffer_h']
-            buf_h.mul_(momentum_h).add_(1 - dampening_h, h)
-            state['momentum_buffer_h'] = buf_h
-            if nesterov_h:
-                h.add_(momentum_h, buf_h)
-            else:
-                h = buf_h
-
-        group['lr'] -= group['hypergrad_lr'] * h
-
+        # Hypergradient descent for the learning rate:
+        group['lr'] += group['hypergrad_lr'] * h
 
         if momentum != 0:
             if 'momentum_buffer' not in state:

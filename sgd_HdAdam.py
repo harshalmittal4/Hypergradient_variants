@@ -4,7 +4,7 @@ from functools import reduce
 from torch.optim.optimizer import Optimizer, required
 
 
-class opSGD_lopAdam(Optimizer):
+class SGD_HDAdam(Optimizer):
     r"""Implements stochastic gradient descent (optionally with momentum).
 
     Nesterov momentum is based on the formula from
@@ -60,10 +60,10 @@ class opSGD_lopAdam(Optimizer):
                         weight_decay=weight_decay, nesterov=nesterov, hypergrad_lr=hypergrad_lr, lr_betas=lr_betas, lr_eps=lr_eps)
         if nesterov and (momentum <= 0 or dampening != 0):
             raise ValueError("Nesterov momentum requires a momentum and zero dampening")
-        super(opSGD_lopAdam, self).__init__(params, defaults)
+        super(SGD_HDAdam, self).__init__(params, defaults)
 
         if len(self.param_groups) != 1:
-            raise ValueError("SGDHD doesn't support per-parameter options (parameter groups)")
+            raise ValueError("SGD_HDAdam doesn't support per-parameter options (parameter groups)")
 
         self._params = self.param_groups[0]['params']
         self._params_numel = reduce(lambda total, p: total + p.numel(), self._params, 0)
@@ -112,7 +112,7 @@ class opSGD_lopAdam(Optimizer):
 
         grad = self._gather_flat_grad_with_weight_decay(weight_decay)
 
-        # NOTE: SGDHD has only global state, but we register it as state for
+        # NOTE: SGD_HDAdam has only global state, but we register it as state for
         # the first param, because this helps with casting in load_state_dict
         state = self.state[self._params[0]]
         # State initialization
@@ -122,27 +122,24 @@ class opSGD_lopAdam(Optimizer):
             # Exponential moving average of hypergradient values
             state['exp_avg_h'] = grad.new_tensor(0)
             # Exponential moving average of squared hypergradient values
-            state['exp_avg_h_sq'] = grad.new_tensor(0)
+            state['exp_avg_h_sq'] = grad.new_tensor(0)            
             
-            state['exp_avg_sq'] = torch.zeros_like(grad) ##########
-        # References and beta1_h, beta2_h coefficients for Hypergradient Descent Adam (HD Adam) of the learning rate
+        # References and beta1_h, beta2_h coefficients, in Hypergradient Adam (HD Adam) for the learning rate
         exp_avg_h, exp_avg_h_sq = state['exp_avg_h'], state['exp_avg_h_sq']
         beta1_h, beta2_h = group['lr_betas']
-        
-        exp_avg_sq = state['exp_avg_sq']
 
         state['step'] += 1
         if state['step'] > 1:
             grad_prev = state['grad_prev']
-            # Hypergradient for SGD
+            # Hypergradient for SGD optimizer
             h = torch.dot(grad, grad_prev)
             h = -h
 
-            # Hypergradient Descent Adam (HD Adam) of the learning rate:
+            # Hypergradient Adam (HD Adam) for the learning rate:
             exp_avg_h.mul_(beta1_h).add_(1 - beta1_h, h)
             exp_avg_h_sq.mul_(beta2_h).addcmul_(1 - beta2_h, h, h)
-            #denom_ = exp_avg_h_sq.sqrt().add_(group['lr_eps'])
-            denom_= torch.sum(exp_avg_sq).add_(group['lr_eps'])              #############
+            denom_ = exp_avg_h_sq.sqrt().add_(group['lr_eps'])
+            #denom_= torch.sum(exp_avg_sq).add_(group['lr_eps'])
 
             bias_correction1_ = 1 - beta1_h ** state['step']
             bias_correction2_ = 1 - beta2_h ** state['step']
@@ -162,7 +159,7 @@ class opSGD_lopAdam(Optimizer):
                 grad.add_(momentum, buf)
             else:
                 grad = buf
-        exp_avg_sq.mul_(0.999).addcmul_(1 - 0.999   , grad, grad) ##############
+
         state['grad_prev'] = grad
 
         self._add_grad(-group['lr'], grad)
