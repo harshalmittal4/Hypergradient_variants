@@ -244,6 +244,11 @@ def train(opt, log_func=None):
                 if iteration + 1 > opt.iterations:
                     print('Early stopping: iteration > {}'.format(opt.iterations))
                     done = True
+                    file = "iterations.csv"
+                    with open(file,"a") as fl:
+                        writer = csv.writer(fl)
+                        writer.writerow('{} | {} | {}'.format(opt.alpha_0, opt.method, iteration))
+                    fl.close()
                     break
             # -------------------------------------------------------------------------
             #   ON EPOCH END (validation)
