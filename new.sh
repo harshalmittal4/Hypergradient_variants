@@ -33,7 +33,7 @@ do
 	fi
 	for alpha0 in [0.01, 0.005, 0.001, 0.0005, 0.0001]:
     do
-    	python train.py --cuda --method $optim --model vgg --dir Alpha_exp --save --beta 0.001 --alpha $alpha0 --lossThreshold $t
+    	python train.py --cuda --method $optim --model vgg --dir Alpha_exp --save --beta 0.001 --alpha_0 $alpha0 --lossThreshold $t
     done
 done
 
