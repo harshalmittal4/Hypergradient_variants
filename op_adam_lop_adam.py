@@ -3,7 +3,7 @@ import torch
 from torch.optim.optimizer import Optimizer
 
 
-class Adam_HDAdam(Optimizer):
+class op_Adam_lop_Adam(Optimizer):
     """Implements Adam algorithm.
 
     It has been proposed in `Adam: A Method for Stochastic Optimization`_.
@@ -31,7 +31,7 @@ class Adam_HDAdam(Optimizer):
                  weight_decay=0, hypergrad_lr=1e-8):
         defaults = dict(lr=lr, betas=betas, eps=eps, lr_betas=lr_betas, lr_eps=lr_eps,
                         weight_decay=weight_decay, hypergrad_lr=hypergrad_lr)
-        super(Adam_HDAdam, self).__init__(params, defaults)
+        super(op_Adam_lop_Adam, self).__init__(params, defaults)
 
     def step(self, closure=None):
         """Performs a single optimization step.
@@ -51,7 +51,7 @@ class Adam_HDAdam(Optimizer):
                     continue
                 grad = p.grad.data
                 if grad.is_sparse:
-                    raise RuntimeError('Adam_HDAdam does not support sparse gradients, please consider SparseAdam instead')
+                    raise RuntimeError('op_Adam_lop_Adam does not support sparse gradients, please consider SparseAdam instead')
 
                 state = self.state[p]
 

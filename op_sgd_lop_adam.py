@@ -4,7 +4,7 @@ from functools import reduce
 from torch.optim.optimizer import Optimizer, required
 
 
-class SGD_HDAdam(Optimizer):
+class op_Sgd_lop_Adam(Optimizer):
     r"""Implements stochastic gradient descent (optionally with momentum).
 
     Nesterov momentum is based on the formula from
@@ -60,10 +60,10 @@ class SGD_HDAdam(Optimizer):
                         weight_decay=weight_decay, nesterov=nesterov, hypergrad_lr=hypergrad_lr, lr_betas=lr_betas, lr_eps=lr_eps)
         if nesterov and (momentum <= 0 or dampening != 0):
             raise ValueError("Nesterov momentum requires a momentum and zero dampening")
-        super(SGD_HDAdam, self).__init__(params, defaults)
+        super(op_Sgd_lop_Adam, self).__init__(params, defaults)
 
         if len(self.param_groups) != 1:
-            raise ValueError("SGD_HDAdam doesn't support per-parameter options (parameter groups)")
+            raise ValueError("op_Sgd_lop_Adam doesn't support per-parameter options (parameter groups)")
 
         self._params = self.param_groups[0]['params']
         self._params_numel = reduce(lambda total, p: total + p.numel(), self._params, 0)
@@ -112,7 +112,7 @@ class SGD_HDAdam(Optimizer):
 
         grad = self._gather_flat_grad_with_weight_decay(weight_decay)
 
-        # NOTE: SGD_HDAdam has only global state, but we register it as state for
+        # NOTE: op_Sgd_lop_Adam has only global state, but we register it as state for
         # the first param, because this helps with casting in load_state_dict
         state = self.state[self._params[0]]
         # State initialization

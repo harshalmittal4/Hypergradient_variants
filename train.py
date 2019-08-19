@@ -14,10 +14,10 @@ import vgg
 from torch.utils.data import DataLoader
 from torch.optim import SGD, Adam
 from hypergrad import SGD_HD, Adam_HD
-from adam_HdAdam import Adam_HDAdam
-from sgd_HdAdam import SGD_HDAdam
-from adam_Hdmomentum import Adam_HDmomentum
-from sgd_Hdmomentum import SGD_HDmomentum
+from op_adam_lop_adam import op_Adam_lop_Adam
+from op_sgd_lop_adam import op_Sgd_lop_Adam
+from op_adam_lop_sgdn import op_Adam_lop_Sgdn
+from op_sgd_lop_sgdn import op_Sgd_lop_Sgdn
 
 
 # =======================================================================
@@ -122,28 +122,28 @@ def train(opt, log_func=None):
         optimizer = SGD(model.parameters(), lr=opt.alpha_0, weight_decay=opt.weightDecay)
     elif opt.method == 'sgd_Hd':
         optimizer = SGD_HD(model.parameters(), lr=opt.alpha_0, weight_decay=opt.weightDecay, hypergrad_lr=opt.beta)
-    elif opt.method == 'sgd_HdAdam':
-        optimizer = SGD_HDAdam(model.parameters(), lr=opt.alpha_0, weight_decay=opt.weightDecay, momentum=0, nesterov=False, hypergrad_lr=opt.beta)
-    elif opt.method == 'sgd_Hdmomentum':
-        optimizer = SGD_HDmomentum(model.parameters(), lr=opt.alpha_0, weight_decay=opt.weightDecay, momentum=0, nesterov=False, hypergrad_lr=opt.beta)
+    #elif opt.method == 'op_sgd_lop_adam':
+    #    optimizer = op_Sgd_lop_Adam(model.parameters(), lr=opt.alpha_0, weight_decay=opt.weightDecay, momentum=0, nesterov=False, hypergrad_lr=opt.beta)
+    elif opt.method == 'op_sgd_lop_sgdn':
+        optimizer = op_Sgd_lop_Sgdn(model.parameters(), lr=opt.alpha_0, weight_decay=opt.weightDecay, momentum=0, nesterov=False, hypergrad_lr=opt.beta)
 
     elif opt.method == 'sgdn':
         optimizer = SGD(model.parameters(), lr=opt.alpha_0, weight_decay=opt.weightDecay, momentum=opt.mu, nesterov=True) # mu required
     elif opt.method == 'sgdn_Hd':
         optimizer = SGD_HD(model.parameters(), lr=opt.alpha_0, weight_decay=opt.weightDecay, momentum=opt.mu, nesterov=True, hypergrad_lr=opt.beta) # mu required
-    elif opt.method == 'sgdn_HdAdam':
-        optimizer = SGD_HDAdam(model.parameters(), lr=opt.alpha_0, weight_decay=opt.weightDecay, momentum=opt.mu, nesterov=True, hypergrad_lr=opt.beta) #mu required
-    elif opt.method == 'sgdn_Hdmomentum':
-        optimizer = SGD_HDmomentum(model.parameters(), lr=opt.alpha_0, weight_decay=opt.weightDecay, momentum=opt.mu, nesterov=True, hypergrad_lr=opt.beta) #mu required
+    #elif opt.method == 'op_sgdn_lop_adam':
+    #    optimizer = op_Sgd_lop_Adam(model.parameters(), lr=opt.alpha_0, weight_decay=opt.weightDecay, momentum=opt.mu, nesterov=True, hypergrad_lr=opt.beta) #mu required
+    elif opt.method == 'op_sgdn_lop_sgdn':
+        optimizer = op_Sgd_lop_Sgdn(model.parameters(), lr=opt.alpha_0, weight_decay=opt.weightDecay, momentum=opt.mu, nesterov=True, hypergrad_lr=opt.beta) #mu required
 
     elif opt.method == 'adam':
         optimizer = Adam(model.parameters(), lr=opt.alpha_0, weight_decay=opt.weightDecay)
     elif opt.method == 'adam_Hd':
         optimizer = Adam_HD(model.parameters(), lr=opt.alpha_0, weight_decay=opt.weightDecay, hypergrad_lr=opt.beta)
-    elif opt.method == 'adam_HdAdam':
-        optimizer = Adam_HDAdam(model.parameters(), lr=opt.alpha_0, weight_decay=opt.weightDecay, hypergrad_lr=opt.beta)
-    elif opt.method == 'adam_Hdmomentum':
-        optimizer = Adam_HDmomentum(model.parameters(), lr=opt.alpha_0, weight_decay=opt.weightDecay, hypergrad_lr=opt.beta)
+    elif opt.method == 'op_adam_lop_adam':
+        optimizer = op_Adam_lop_Adam(model.parameters(), lr=opt.alpha_0, weight_decay=opt.weightDecay, hypergrad_lr=opt.beta)
+    #elif opt.method == 'op_adam_lop_sgdn':
+    #    optimizer = op_Adam_lop_Sgdn(model.parameters(), lr=opt.alpha_0, weight_decay=opt.weightDecay, hypergrad_lr=opt.beta)
     else:
         raise Exception('Unknown method: {}'.format(opt.method))
 
@@ -300,9 +300,9 @@ def main():
         parser.add_argument('--cuda', help='use CUDA', action='store_true')
         parser.add_argument('--device', help='selected CUDA device', default=0, type=int)
         parser.add_argument('--seed', help='random seed', default=1, type=int)
-        parser.add_argument('--dir', help='directory to write the output files', default='results', type=str)
+        parser.add_argument('--dir', help='directory to write the output files', default='test', type=str)
         parser.add_argument('--model', help='model (logreg, mlp, vgg)', default='logreg', type=str)
-        parser.add_argument('--method', help='method (sgd, sgd_Hd, sgd_Hdmomentum, sgd_HdAdam, sgdn, sgdn_Hd, sgdn_Hdmomentum, sgdn_HdAdam, adam, adam_Hd, adam_Hdmomentum, adam_HdAdam)', default='adam_Hd', type=str)
+        parser.add_argument('--method', help='method (sgd, sgd_Hd, op_sgd_lop_sgdn, sgdn, sgdn_Hd, op_sgdn_lop_sgdn, adam, adam_Hd, op_adam_lop_adam)', default='adam_Hd', type=str)
         parser.add_argument('--alpha_0', help='initial learning rate', default=0.001, type=float)
         parser.add_argument('--beta', help='learning learning rate', default=0.000001, type=float)
         parser.add_argument('--mu', help='momentum', default=0.9, type=float)

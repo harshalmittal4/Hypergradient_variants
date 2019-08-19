@@ -1,22 +1,33 @@
-#!/usr/bin/env bash
 
-python train.py --cuda --model logreg --method sgd     --save --epochs 10 --alpha_0 0.001 --beta 0.001
-python train.py --cuda --model logreg --method sgd_hd  --save --epochs 10 --alpha_0 0.001 --beta 0.001
-python train.py --cuda --model logreg --method sgdn    --save --epochs 10 --alpha_0 0.001 --beta 0.001
-python train.py --cuda --model logreg --method sgdn_hd --save --epochs 10 --alpha_0 0.001 --beta 0.001
-python train.py --cuda --model logreg --method adam    --save --epochs 10 --alpha_0 0.001 --beta 1e-7
-python train.py --cuda --model logreg --method adam_hd --save --epochs 10 --alpha_0 0.001 --beta 1e-7
+#logreg
+python train.py --cuda --method sgd --model logreg --epochs 20 --dir test --save
+python train.py --cuda --method sgd_Hd --model logreg --epochs 20 --dir test --save --beta 0.001
+python train.py --cuda --method op_sgd_lop_sgdn --model logreg --epochs 20 --dir test --save --beta 0.001
+python train.py --cuda --method sgdn --mu 0.9 --model logreg --epochs 20 --dir test --save
+python train.py --cuda --method sgdn_Hd --mu 0.9 --model logreg --epochs 20 --dir test --save --beta 0.001
+python train.py --cuda --method op_sgdn_lop_sgdn --mu 0.9 --model logreg --epochs 20 --dir test --save --beta 0.001
+python train.py --cuda --method adam --model logreg --epochs 20 --dir test --save
+python train.py --cuda --method adam_Hd --model logreg --epochs 20 --dir test --save --beta 0.0000001
+python train.py --cuda --method op_adam_lop_adam --model logreg --epochs 20 --dir test --save --beta 0.0000001
 
-python train.py --cuda --model mlp --method sgd     --save --epochs 100 --alpha_0 0.001 --beta 0.001
-python train.py --cuda --model mlp --method sgd_hd  --save --epochs 100 --alpha_0 0.001 --beta 0.001
-python train.py --cuda --model mlp --method sgdn    --save --epochs 100 --alpha_0 0.001 --beta 0.001
-python train.py --cuda --model mlp --method sgdn_hd --save --epochs 100 --alpha_0 0.001 --beta 0.001
-python train.py --cuda --model mlp --method adam    --save --epochs 100 --alpha_0 0.001 --beta 1e-7
-python train.py --cuda --model mlp --method adam_hd --save --epochs 100 --alpha_0 0.001 --beta 1e-7
+#mlp
+python train.py --cuda --method sgd --model mlp --epochs 100 --dir test --save
+python train.py --cuda --method sgd_Hd --model mlp --epochs 100 --dir test --save --beta 0.001
+python train.py --cuda --method op_sgd_lop_sgdn --model mlp --epochs 100 --dir test --save --beta 0.001
+python train.py --cuda --method sgdn --mu 0.9 --model mlp --epochs 100 --dir test --save
+python train.py --cuda --method sgdn_Hd --mu 0.9 --model mlp --epochs 100 --dir test --save --beta 0.001
+python train.py --cuda --method op_sgdn_lop_sgdn --mu 0.9 --model mlp --epochs 100 --dir test --save --beta 0.001
+python train.py --cuda --method adam --model mlp --epochs 100 --dir test --save
+python train.py --cuda --method adam_Hd --model mlp --epochs 100 --dir test --save --beta 0.0000001
+python train.py --cuda --method op_adam_lop_adam --model mlp --epochs 100 --dir test --save --beta 0.0000001
 
-python train.py --cuda --model vgg --method sgd     --save --epochs 100 --alpha_0 0.001 --beta 0.001
-python train.py --cuda --model vgg --method sgd_hd  --save --epochs 100 --alpha_0 0.001 --beta 0.001
-python train.py --cuda --model vgg --method sgdn    --save --epochs 100 --alpha_0 0.001 --beta 0.001
-python train.py --cuda --model vgg --method sgdn_hd --save --epochs 100 --alpha_0 0.001 --beta 0.001
-python train.py --cuda --model vgg --method adam    --save --epochs 100 --alpha_0 0.001 --beta 1e-8
-python train.py --cuda --model vgg --method adam_hd --save --epochs 100 --alpha_0 0.001 --beta 1e-8
+#vgg
+python train.py --cuda --method sgd --model vgg --epochs 200 --dir test --save
+python train.py --cuda --method sgd_Hd --model vgg --epochs 200 --dir test --save --beta 0.001
+python train.py --cuda --method op_sgd_lop_sgdn --model vgg --epochs 200 --dir test --save --beta 0.001
+python train.py --cuda --method sgdn --mu 0.9 --model vgg --epochs 200 --dir test --save
+python train.py --cuda --method sgdn_Hd --mu 0.9 --model vgg --epochs 200 --dir test --save --beta 0.001
+python train.py --cuda --method op_sgdn_lop_sgdn --mu 0.9 --model vgg --epochs 200 --dir test --save --beta 0.001
+python train.py --cuda --method adam --model vgg --epochs 200 --dir test --save
+python train.py --cuda --method adam_Hd --model vgg --epochs 200 --dir test --save --beta 1e-8
+python train.py --cuda --method op_adam_lop_adam --model vgg --epochs 200 --dir test --save --beta 1e-8
