@@ -18,7 +18,7 @@ The new optimizers and the respective hypergradient-descent baselines from which
 - SGDN<sub>op</sub>-SGDN<sub>lop</sub>, with baseline SGDN-HD (i.e SGDN<sub>op</sub>-SGD<sub>lop</sub>)
 - Adam<sub>op</sub>-Adam<sub>lop</sub>, with baseline Adam-HD (i.e Adam<sub>op</sub>-SGD<sub>lop</sub>)
 
-The optimizers provide the following advantages when evaluated against the baselines: Better generalization, Faster convergence, Better training stability (less sensitive to the initial chosen learning rate).
+The optimizers provide the following advantages when evaluated against their hypergradient-descent baselines: Better generalization, Faster convergence, Better training stability (less sensitive to the initial chosen learning rate).
 
 
 Motivation
