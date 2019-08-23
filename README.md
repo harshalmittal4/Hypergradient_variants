@@ -60,7 +60,7 @@ folders and files below will be generated after running the experiments
 
 Experiments
 ---
-The experiment configurations (hyperparameters alpha_0 and beta) are defined in [run.sh](https://github.com/harshalmittal4/HD_variants/blob/master/run.sh)  for the optimizers and three model classes. The experiments for the new optimizers are run following the same settings as the author's Hypergradient-descent optimizers: Logreg (20 epochs on MNIST), MLP (100 epochs on MNIST) and VGGNet (200 epochs on CIFAR-10).
+The experiment configurations (hyperparameters alpha_0 and beta) are defined in [run.sh](https://github.com/harshalmittal4/HD_variants/blob/master/run.sh)  for the optimizers and three model classes. The experiments for the new optimizers are run following the same settings as their Hypergradient-descent versions: Logreg (20 epochs on MNIST), MLP (100 epochs on MNIST) and VGGNet (200 epochs on CIFAR-10).
 
 ## References
 
