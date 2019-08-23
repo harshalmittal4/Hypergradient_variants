@@ -1,9 +1,9 @@
 Hypergradient based Optimization Methods
 ===
-This work tries to improve upon the existing 'Hypergradient' based optimizers as proposed in the paper: [Online Learning Rate Adaptation with Hypergradient Descent][1].
+This work tries improvements to the existing 'Hypergradient' based optimizers proposed in the paper [Online Learning Rate Adaptation with Hypergradient Descent][1].
 
 ## Introduction
-The method proposed in the paper ["Online Learning Rate Adaptation with Hypergradient Descent"][1] automatically adjusts the learning rate to minimize some estimate of the expectation of the loss, by introducing the “hypergradient” - the gradient of any loss function w.r.t hyperparameter “eta” (the optimizer learning rate). It learns the step-size via an update from gradient descent of the hypergradient at each training iteration, and uses it alongside the model optimizers SGD, SGD with Nesterov (SGDN) and Adam to resulting in their hypergradient counterparts SGD-HD, SGDN-HD and Adam-HD, which demonstrate faster convergence of the loss and better generalization than solely using the original (plain) optimizers, and hence improving training. 
+The method proposed in the paper ["Online Learning Rate Adaptation with Hypergradient Descent"][1] automatically adjusts the learning rate to minimize some estimate of the expectation of the loss, by introducing the “hypergradient” - the gradient of any loss function w.r.t hyperparameter “eta” (the optimizer learning rate). It learns the step-size via an update from gradient descent of the hypergradient at each training iteration, and uses it alongside the model optimizers SGD, SGD with Nesterov (SGDN) and Adam resulting in their hypergradient counterparts SGD-HD, SGDN-HD and Adam-HD, which demonstrate faster convergence of the loss and better generalization than solely using the original (plain) optimizers. 
 
 But we expect that the hypergradient based learning rate update could be more accurate and aim to exploit the gains much better by boosting the learning rate updates with momentum and adaptive gradients, experimenting with 
 1. Hypergradient descent with momentum, and
@@ -23,7 +23,7 @@ The optimizers provide the following advantages when evaluated against the basel
 
 Motivation
 ---
-The alpha_0 (initial learning rate) and beta (hypergradient l.r) configurations for the new optimizers are kept the same as the respective baselines from the paper (see [run.sh](https://github.com/harshalmittal4/HD_variants/blob/master/run.sh) for details). The results show that the new optimizers perform better for all the three model class (VGGNet, LogReg, MLP) given in the paper.
+The alpha_0 (initial learning rate) and beta (hypergradient l.r) configurations for the new optimizers are kept the same as the respective baselines from the paper (see [run.sh](https://github.com/harshalmittal4/HD_variants/blob/master/run.sh) for details). The results show that the new optimizers perform better for all the three models (VGGNet, LogReg, MLP).
 
 <img src="results.png">
 <p align=center>Behavior of the optimizers compared with their hypergradient-descent baselines.</p>
@@ -65,15 +65,7 @@ The experiment configurations (hyperparameters alpha_0 and beta) are defined in 
 ## References
 
 1) [Hypergradient Descent (Github repository)](https://github.com/gbaydin/hypergradient-descent)
-2) If you find this useful, consider citing:
-```bash
-@inproceedings{baydin2018hypergradient,
-  title = {Online Learning Rate Adaptation with Hypergradient Descent},
-  author = {Baydin, Atılım Güneş and Cornish, Robert and Rubio, David Martínez and Schmidt, Mark and Wood, Frank},
-  booktitle = {Sixth International Conference on Learning Representations (ICLR), Vancouver, Canada, April 30 -- May 3, 2018},
-  year = {2018}
-}
-```
+
 ## Contributors
 - [Harshal Mittal][2]
 - [Yash Kant][3]
