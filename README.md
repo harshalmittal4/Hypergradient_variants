@@ -1,9 +1,6 @@
 Hypergradient based Optimization Methods
 ===
 This work tries to improve upon the existing 'Hypergradient' based optimizers as proposed in the paper: [Online Learning Rate Adaptation with Hypergradient Descent][1].
-## Table of Contents
-
-[TOC]
 
 ## Introduction
 The method proposed in the paper ["Online Learning Rate Adaptation with Hypergradient Descent"][1] automatically adjusts the learning rate to minimize some estimate of the expectation of the loss, by introducing the “hypergradient” - the gradient of any loss function w.r.t hyperparameter “eta” (the optimizer learning rate). It learns the step-size via an update from gradient descent of the hypergradient at each training iteration, and uses it alongside the model optimizers SGD, SGD with Nesterov (SGDN) and Adam to resulting in their hypergradient counterparts SGD-HD, SGDN-HD and Adam-HD, which demonstrate faster convergence of the loss and better generalization than solely using the original (plain) optimizers, and hence improving training. 
@@ -14,7 +11,7 @@ But we expect that the hypergradient based learning rate update could be more ac
 
 alongside the model optimizers SGD, SGD with Nesterov(SGDN) and Adam. 
 
-The naming convention used is: **<model optimizer><sub>op</sub>-<learning rate optimizer><sub>lop</sub>**, following which we have **<model optimizer><sub>op</sub>-SGDN<sub>lop</sub>** (when the l.r. optimizer is hypergradient descent with momentum) and **<model optimizer><sub>op</sub>-Adam<sub>lop</sub>** (when the l.r. optimizer is adam with hypergradient).
+The naming convention used is: **{model optimizer}<sub>op</sub>-{learning rate optimizer}<sub>lop</sub>**, following which we have **{model optimizer}<sub>op</sub>-SGDN<sub>lop</sub>** (when the l.r. optimizer is hypergradient descent with momentum) and **{model optimizer}<sub>op</sub>-Adam<sub>lop</sub>** (when the l.r. optimizer is adam with hypergradient).
 
 The new optimizers and the respective hypergradient-descent baselines from which their performance are compared are given as
 - SGD<sub>op</sub>-SGDN<sub>lop</sub>, with baseline SGD-HD (i.e. SGD<sub>op</sub>-SGD<sub>lop</sub>)
@@ -44,10 +41,10 @@ The project is organised as follows:
 │   ├── __init__.py 
 │   ├── sgd_Hd.py  # model op. sgd, l.r. optimizer Hypergadient-descent (original)
 │   └── adam_Hd.py #model op. adam, l.r. optimizer Hypergadient-descent (original)
-├── sgd_Hdmomentum.py # model op. sgd, l.r. optimizer Hypergadient-descent with momentum
-├── sgd_HdAdam.py # model op. sgd, l.r. optimizer Adam with Hypergadient 
-├── adam_Hdmomentum.py # model op. adam, l.r. optimizer Hypergadient-descent with momentum
-├── adam_HdAdam.py # model op. adam, l.r. optimizer Adam with Hypergadient
+├── op_sgd_lop_sgdn.py # model op. sgd, l.r. optimizer Hypergadient-descent with momentum
+├── op_sgd_lop_adam.py # model op. sgd, l.r. optimizer Adam with Hypergadient 
+├── op_adam_lop_sgdn.py # model op. adam, l.r. optimizer Hypergadient-descent with momentum
+├── op_adam_lop_adam.py # model op. adam, l.r. optimizer Adam with Hypergadient
 ├── vgg.py
 ├── train.py
 ├── test/ # results of the experiments
@@ -77,4 +74,12 @@ The experiment configurations (hyperparameters alpha_0 and beta) are defined in 
   year = {2018}
 }
 ```
+## Contributors
+- [Harshal Mittal][2]
+- [Yash Kant][3]
+- [Ankit Dhankar][4]
+
 [1]:https://arxiv.org/pdf/1703.04782.pdf
+[2]:https://github.com/harshalmittal4
+[3]:https://github.com/yashkant
+[4]:https://github.com/Ankit-Dhankhar
