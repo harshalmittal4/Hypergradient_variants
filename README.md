@@ -23,7 +23,7 @@ The optimizers provide the following advantages when evaluated against their hyp
 
 Motivation
 ---
-The alpha_0 (initial learning rate) and beta (hypergradient l.r) configurations for the new optimizers are kept the same as the respective baselines from the paper (see [run.sh](https://github.com/harshalmittal4/HD_variants/blob/master/run.sh) for details). The results show that the new optimizers perform better for all the three models (VGGNet, LogReg, MLP).
+The alpha_0 (initial learning rate) and beta (hypergradient l.r) configurations for the new optimizers are kept the same as the respective baselines from the paper (see [run.sh](https://github.com/harshalmittal4/HD_variants/blob/master/run.sh) for details). The results show that the new optimizers perform better for all the three models (VGGNet, LogReg, MLP). More description about the optimizers can be found in the project report [here](https://github.com/harshalmittal4/Hypergradient_variants/blob/master/Hypergradient_optimizers.pdf). 
 
 <img src="results.png">
 <p align=center>Behavior of the optimizers compared with their hypergradient-descent baselines.</p>
@@ -67,9 +67,9 @@ The experiment configurations (hyperparameters alpha_0 and beta) are defined in 
 1) [Hypergradient Descent (Github repository)](https://github.com/gbaydin/hypergradient-descent)
 
 ## Contributors
-- [Harshal Mittal][2]
-- [Yash Kant][3]
-- [Ankit Dhankar][4]
+- harshalmittal4
+- [yashkant][3]
+- [Ankit-Dhankhar][4]
 
 [1]:https://arxiv.org/pdf/1703.04782.pdf
 [2]:https://github.com/harshalmittal4
